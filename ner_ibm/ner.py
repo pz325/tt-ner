@@ -1,12 +1,9 @@
 import os
-import hashlib
-import diskcache
 import json
 from watson_developer_cloud import NaturalLanguageUnderstandingV1
 from watson_developer_cloud.natural_language_understanding_v1 import Features, EntitiesOptions
 
-_CACHED_RESULT_PATH = os.path.dirname(os.path.realpath(__file__))
-_cached_results = diskcache.Cache(_CACHED_RESULT_PATH)
+
 _CREDENTIAL_FILE = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     'credential.json'
@@ -25,21 +22,6 @@ _natural_language_understanding = NaturalLanguageUnderstandingV1(
     username=_credential['username'],
     password=_credential['password']
 )
-
-
-def _get_ner_from_cache(text):
-    global _cached_results
-    key = hashlib.md5(text.encode()).hexdigest()
-    if key in _cached_results:
-        return _cached_results[key]
-    else:
-        return None
-
-
-def _save_ner_to_cache(text, ner_result):
-    global _cached_results
-    key = hashlib.md5(text.encode()).hexdigest()
-    _cached_results[key] = ner_result
 
 
 def _transform_ner_api_resp(entities, lables=['Person', 'Company', 'Location']):
@@ -68,19 +50,12 @@ def get_ner(text):
     Get NER chunks from text
     @return { 'person': [], 'location': [], 'organization': [] }
     '''
-    ret = _get_ner_from_cache(text)
-    if ret:
-        print('Get resunt from local cache')
-        return ret
-
     response = _natural_language_understanding.analyze(
         text=text,
         features=Features(
             entities=EntitiesOptions()))
 
     ner_result = _transform_ner_api_resp(response['entities'])
-
-    _save_ner_to_cache(text, ner_result)
     return ner_result
 
 

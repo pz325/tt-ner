@@ -1,18 +1,13 @@
 import requests
 import json
-import pickle
 import os
-import hashlib
-import diskcache
 
 
 _auth_token = ''
-_CACHED_RESULT_PATH = os.path.dirname(os.path.realpath(__file__))
 _CREDENTIAL_FILE = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     'credential.json'
 )
-_cached_results = diskcache.Cache(_CACHED_RESULT_PATH)
 
 
 def _load_credential():
@@ -36,21 +31,6 @@ def _auth():
         auth_request_url, data=auth_request_data, headers=auth_request_header)
     auth_token = auth_request.json()['access_token']
     return auth_token
-
-
-def _get_ner_from_cache(text):
-    global _cached_results
-    key = hashlib.md5(text.encode()).hexdigest()
-    if key in _cached_results:
-        return _cached_results[key]
-    else:
-        return None
-
-
-def _save_ner_to_cache(text, ner_result):
-    global _cached_results
-    key = hashlib.md5(text.encode()).hexdigest()
-    _cached_results[key] = ner_result
 
 
 def _transform_ner_api_resp(resp, lables=['PERSON', 'LOCATION', 'ORGANIZATION']):
@@ -97,11 +77,6 @@ def get_ner(text):
     Get NER chunks from text
     @return { 'person': [], 'location': [], 'organization': [] }
     '''
-    ret = _get_ner_from_cache(text)
-    if ret:
-        print('Get resunt from local cache')
-        return ret
-
     global _auth_token
     if not _auth_token:
         _auth_token = _auth()
@@ -112,7 +87,6 @@ def get_ner(text):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer {auth_token}'.format(auth_token=_auth_token)
     }
-
     ner_data = {
         "confidenceThreshold": "0",
         "docId": "doc1",
@@ -120,12 +94,9 @@ def get_ner(text):
         "language": "en",
         "annotatedMentions": [{"charLength": 3, "charOffset": 5}]
     }
-
     ner_api_resp = requests.post(
         ner_api_url, headers=ner_api_headers, data=json.dumps(ner_data))
-
     ner_result = _transform_ner_api_resp(ner_api_resp.json()['entities'])
-    _save_ner_to_cache(text, ner_result)
 
     return ner_result
 

@@ -4,12 +4,10 @@ import json
 import hashlib
 import diskcache
 
-_CACHED_RESULT_PATH = os.path.dirname(os.path.realpath(__file__))
 _CREDENTIAL_FILE = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     'credential.json'
 )
-_cached_results = diskcache.Cache(_CACHED_RESULT_PATH)
 
 
 def _load_credential():
@@ -19,21 +17,6 @@ def _load_credential():
 
 # setup paralleldots sdk globally
 paralleldots.set_api_key(_load_credential()['api_key'])
-
-
-def _get_ner_from_cache(text):
-    global _cached_results
-    key = hashlib.md5(text.encode()).hexdigest()
-    if key in _cached_results:
-        return _cached_results[key]
-    else:
-        return None
-
-
-def _save_ner_to_cache(text, ner_result):
-    global _cached_results
-    key = hashlib.md5(text.encode()).hexdigest()
-    _cached_results[key] = ner_result
 
 
 def _transform_ner_api_resp(resp, lables=['group', 'name', 'place']):
@@ -83,15 +66,8 @@ def get_ner(text):
     Get NER chunks from text
     @return { 'person': [], 'location': [], 'organization': [] }
     '''
-    ret = _get_ner_from_cache(text)
-    if ret:
-        print('Get resunt from local cache')
-        return ret
-
     ner_api_return = paralleldots.ner(text)
     ner_chunks = _transform_ner_api_resp(ner_api_return['entities'])
-    _save_ner_to_cache(text, ner_chunks)
-
     return ner_chunks
 
 
