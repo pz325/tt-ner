@@ -107,3 +107,6 @@ venv.bak/
 cache.db
 
 credential.json
+
+# paralleldots
+settings.cfg
