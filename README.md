@@ -7,3 +7,4 @@ Include
 - Ambiverse Entity Linking Service API (`ambiverse/ner.py`)
 - Google Cloud Natural Language API (`google/ner.py`)
 - ParallelDots API (`paralleldots/ner.py`)
+- IBM Watson Natural Language Understanding API (`ibm/ner.py`)
