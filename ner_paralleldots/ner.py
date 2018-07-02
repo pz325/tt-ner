@@ -90,7 +90,7 @@ def get_ner(text):
 
     ner_api_return = paralleldots.ner(text)
     ner_chunks = _transform_ner_api_resp(ner_api_return['entities'])
-    _save_ner_to_cache(text, ner_result)
+    _save_ner_to_cache(text, ner_chunks)
 
     return ner_chunks
 
