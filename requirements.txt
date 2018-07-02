@@ -3,3 +3,5 @@ requests
 diskcache
 numpy
 paralleldots
+google-cloud-language
+watson-developer-cloud
