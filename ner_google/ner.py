@@ -47,9 +47,7 @@ def get_ner(text):
         document=document,
         encoding_type='UTF32')
 
-    ner_result = {'person': [], 'location': [], 'organization': []}
-    if 'entities' in response:
-        ner_result = _transform_ner_api_resp(response.entities)
+    ner_result = _transform_ner_api_resp(response.entities)
     return ner_result
 
 
