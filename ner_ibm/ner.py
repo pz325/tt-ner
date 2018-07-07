@@ -55,7 +55,9 @@ def get_ner(text):
         features=Features(
             entities=EntitiesOptions()))
 
-    ner_result = _transform_ner_api_resp(response['entities'])
+    ner_result = {}
+    if 'entities' in response:
+        ner_result = _transform_ner_api_resp(response['entities'])
     return ner_result
 
 

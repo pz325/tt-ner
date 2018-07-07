@@ -67,8 +67,10 @@ def get_ner(text):
     @return { 'person': [], 'location': [], 'organization': [] }
     '''
     ner_api_return = paralleldots.ner(text)
-    ner_chunks = _transform_ner_api_resp(ner_api_return['entities'])
-    return ner_chunks
+    ner_result = {'person': [], 'location': [], 'organization': []}
+    if 'entities' in ner_api_return:
+        ner_result = _transform_ner_api_resp(ner_api_return['entities'])
+    return ner_result
 
 
 if __name__ == '__main__':

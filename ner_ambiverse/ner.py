@@ -95,8 +95,11 @@ def get_ner(text):
         "annotatedMentions": [{"charLength": 3, "charOffset": 5}]
     }
     ner_api_resp = requests.post(
-        ner_api_url, headers=ner_api_headers, data=json.dumps(ner_data))
-    ner_result = _transform_ner_api_resp(ner_api_resp.json()['entities'])
+        ner_api_url, headers=ner_api_headers, data=json.dumps(ner_data)).json()
+
+    ner_result = {'person': [], 'location': [], 'organization': []}
+    if 'entities' in ner_api_resp:
+        ner_result = _transform_ner_api_resp(ner_api_resp.json()['entities'])
 
     return ner_result
 
