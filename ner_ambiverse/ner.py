@@ -99,7 +99,7 @@ def get_ner(text):
 
     ner_result = {'person': [], 'location': [], 'organization': []}
     if 'entities' in ner_api_resp:
-        ner_result = _transform_ner_api_resp(ner_api_resp.json()['entities'])
+        ner_result = _transform_ner_api_resp(ner_api_resp['entities'])
 
     return ner_result
 
