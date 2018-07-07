@@ -110,3 +110,5 @@ credential.json
 
 # paralleldots
 settings.cfg
+
+.DS_Store
